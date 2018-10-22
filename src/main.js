@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import VueRouter from 'vue-router';
 import pdfjs from 'pdfjs-dist';
+import store from './store';
 import MainContainer from './MainContainer.vue';
 
 pdfjs.GlobalWorkerOptions.workerSrc = 'pdf.worker.bundle.js';
@@ -17,41 +18,6 @@ const routes = [
     {path: '/swift'},
     {path: 'etc'}
 ];
-
-const store = {
-    state: {
-        books: [],
-        indexs: [],
-        lastIndex: -1
-    },
-    getters: {
-        books: state => state.books,
-        indexs: state => state.indexs,
-        lastIndex: state => state.lastIndex
-    },
-    mutations: {
-        addBook(state, payload) {
-            state.books = [...state.books, payload.book];
-        },
-        setIndexs(state, payload) {
-            state.indexs = payload.indexs;
-        },
-        setLastIndex(state, payload) {
-            state.lastIndex = payload.lastIndex;
-        }
-    },
-    actions: {
-        addBook({commit, state}, book) {
-            commit('addBook', {book});
-            commit('setLastIndex', {
-                lastIndex: state.books.lastIndexOf(book)
-            });
-        },
-        setIndexs({commit}, indexs) {
-            commit('setIndexs', {indexs});
-        }
-    }
-};
 
 const app = new Vue({
     template: '<main-container />',
