@@ -1,5 +1,5 @@
 <template>
-    <div class="content">
+    <div :class="mode">
         <h2>add book</h2>
         <button>add</button>
         <h2>category</h2>
@@ -13,3 +13,22 @@
         </ul>
     </div>
 </template>
+<script>
+export default {
+    computed: {
+        mode: function() {
+            const mode = this.$store.getters.leftMode;
+            if (mode) {
+                return 'content';
+            } else {
+                return 'content-hide';
+            }
+        }
+    }
+}
+</script>
+<style scoped>
+.content-hide {
+    display: none;
+}
+</style>
