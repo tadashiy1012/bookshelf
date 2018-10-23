@@ -105,7 +105,6 @@ router.post('/books', async (ctx) => {
         files[0].pipe(writer);
         const category = fields.category;
         const resp = await put({book: fields.book, file: fileName, category: category});
-        console.log(resp);
         result = JSON.stringify(resp);
     } catch (err) {
         console.log(err);
