@@ -18,28 +18,41 @@ function getUniqueStr(myStrong){
 const db = {};
 db.books = new Nedb({filename: 'booksfile'});
 db.books.loadDatabase();
+db.category = new Nedb({filename: 'categoryfile'});
+db.category.loadDatabase();
+const BOOKS = 'books';
+const CATEGORY = 'category';
 
-const get = (query) => {
+const get = (table, query) => {
     return new Promise((resolve, reject) => {
-        db.books.find(query, (err, docs) => {
+        db[table].find(query, (err, docs) => {
             if (err) { reject(err); }
             else { resolve(docs); }
         });
     }); 
 };
 
-const put = (doc) => {
+const put = (table, doc) => {
     return new Promise((resolve, reject) => {
-        db.books.insert(doc, (err, newDoc) => {
+        db[table].insert(doc, (err, newDoc) => {
             if (err) { reject(err); }
             else { resolve(newDoc); }
         });
     });
 };
 
-const del = (query) => {
+const set = (table, query, doc) => {
     return new Promise((resolve, reject) => {
-        db.books.remove(query, {}, (err, result) => {
+        db[table].update(query, {$set: doc}, {}, (err, result) => {
+            if (err) { reject(err); }
+            else { resolve(result); }
+        });
+    });
+}
+
+const del = (table, query) => {
+    return new Promise((resolve, reject) => {
+        db[table].remove(query, {}, (err, result) => {
             if (err) { reject(err); }
             else { resolve(result); }
         });
@@ -74,21 +87,8 @@ router.get('/', async (ctx) => {
 router.get('/books', async (ctx) => {
     let result = 'ng';
     try {
-        const books = await get({});
+        const books = await get(BOOKS, {});
         result = JSON.stringify(books);
-    } catch (err) {
-        console.log(err);
-    }
-    ctx.body = result;
-});
-
-router.get('/books/:id', async (ctx) => {
-    let result = 'ng';
-    console.log(ctx.params);
-    const id = ctx.params.id;
-    try {
-        const book = await get({_id: id});
-        result = JSON.stringify(book);
     } catch (err) {
         console.log(err);
     }
@@ -103,8 +103,7 @@ router.post('/books', async (ctx) => {
         const writer = fs.createWriteStream(UPLOAD_DIR + '/' + fileName);
         writer.on('finish', () => { console.log('file save ok!'); });
         files[0].pipe(writer);
-        const category = fields.category;
-        const resp = await put({book: fields.book, file: fileName, category: category});
+        const resp = await put(BOOKS, {book: fields.book, file: fileName});
         result = JSON.stringify(resp);
     } catch (err) {
         console.log(err);
@@ -117,9 +116,50 @@ router.delete('/books/:id', async (ctx) => {
     console.log(ctx.params);
     const id = ctx.params.id;
     try {
-        const resp = await del({_id: id});
+        const resp = await del(BOOKS, {_id: id});
         console.log(resp);
         result = 'ok';
+    } catch (err) {
+        console.log(err);
+    }
+    ctx.body = result;
+});
+
+router.get('/categories', async (ctx) => {
+    let result = 'ng';
+    try {
+        const resp = await get(CATEGORY, {});
+        result = JSON.stringify(resp);
+    } catch (err) {
+        console.log(err);
+    }
+    ctx.body = result;
+});
+
+router.post('/categories', async (ctx) => {
+    let result = 'ng';
+    try {
+        console.log(ctx.request.body);
+        const name = ctx.request.body.name;
+        const exist = await get(CATEGORY, {name});
+        if (exist.length > 0) { throw new Error('category name exist'); }
+        const resp = await put(CATEGORY, {name, books: []});
+        result = JSON.stringify(resp);
+    } catch (err) {
+        console.log(err);
+    }
+    ctx.body = result;
+});
+
+router.patch('/categories/:id', async (ctx) => {
+    let result = 'ng';
+    try {
+        console.log(ctx.params);
+        console.log(ctx.request.body);
+        const id = ctx.params.id;
+        const books = ctx.request.body.books;
+        const resp = await set(CATEGORY, {_id: id}, {books});
+        result = JSON.stringify(resp);
     } catch (err) {
         console.log(err);
     }
