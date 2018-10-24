@@ -1,15 +1,13 @@
 const state = {
     books: [],
-    indexs: [],
-    lastIndex: -1,
+    categories: [],
     leftMode: true,
     rightMode: true
 };
 
 const getters = {
     books: state => state.books,
-    indexs: state => state.indexs,
-    lastIndex: state => state.lastIndex,
+    categories: state => state.categories,
     leftMode: state => state.leftMode,
     rightMode: state => state.rightMode
 };
@@ -17,12 +15,6 @@ const getters = {
 const mutations = {
     addBook(state, payload) {
         state.books = [...state.books, payload.book];
-    },
-    setIndexs(state, payload) {
-        state.indexs = payload.indexs;
-    },
-    setLastIndex(state, payload) {
-        state.lastIndex = payload.lastIndex;
     },
     setLeftMode(state, payload) {
         state.leftMode = payload.leftMode;
@@ -33,14 +25,8 @@ const mutations = {
 };
 
 const actions = {
-    addBook({commit, state}, book) {
+    addBook({commit}, book) {
         commit('addBook', {book});
-        commit('setLastIndex', {
-            lastIndex: state.books.lastIndexOf(book)
-        });
-    },
-    setIndexs({commit}, indexs) {
-        commit('setIndexs', {indexs});
     },
     setLeftMode({commit}, leftMode) {
         commit('setLeftMode', {leftMode});

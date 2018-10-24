@@ -11,19 +11,21 @@ Vue.use(Vuex);
 Vue.use(VueRouter);
 
 const routes = [
-    {path: '/'},
-    {path: '/java'},
-    {path: '/php'},
-    {path: '/javascript'},
-    {path: '/swift'},
-    {path: 'etc'}
+    {path: '/'}
 ];
 
 const app = new Vue({
     template: '<main-container />',
     components: {MainContainer},
     router: new VueRouter({routes}),
-    store: new Vuex.Store(store)
+    store: new Vuex.Store(store),
+    created: async function() {
+        const resp = await fetch('/books');
+        const json = await resp.json();
+        json.forEach(elm => {
+            this.$store.dispatch('addBook', elm);
+        });
+    }
 }).$mount('#app');
 
 console.log(app);
