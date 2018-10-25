@@ -22,10 +22,20 @@ export default {
         leave: function(ev) {
             ev.preventDefault();
         },
-        drop: function(ev) {
+        drop: async function(ev) {
             ev.stopPropagation();
             const data = ev.dataTransfer.getData('tgt');
-            console.log(data);
+            const div = document.createElement('div');
+            div.innerHTML = data;
+            const input = div.querySelector('input');
+            const json = JSON.parse(input.value);
+            const ctgrs = this.$store.getters.categories;
+            const path = this.$route.path.substr(1);
+            const ctgr = ctgrs.find(elm => elm.name === path);
+            const books = ctgr.books;
+            ctgr.books = [...ctgr.books, json._id];
+            await this.$store.dispatch('setCategory', ctgrs);
+            await this.$store.dispatch('pushCategory');
         }
     },
     created: function() {

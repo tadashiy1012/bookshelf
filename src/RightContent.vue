@@ -6,7 +6,10 @@
         <div class="bookContainer" v-on:dragstart="start" v-on:dragover="over" v-on:dragleave="leave">
             <template v-for="(book, idx) in books">
                 <div :key="idx">
-                    <img class="bookImg" :src="book.book" draggable="true" />
+                    <div class="draggableContainer" draggable="true">
+                        <img class="bookImg" :src="book.book" />
+                        <input type="hidden" name="book" :value="JSON.stringify(book)" />
+                    </div>
                 </div>
             </template>
         </div>
@@ -41,9 +44,8 @@ export default {
             this.$store.dispatch('setRightMode', false);
         },
         start: async function(ev) {
-            await this.$store.dispatch('setDndTarget', ev.target);
-            let tgt = this.$store.getters.dndTarget;
-            ev.dataTransfer.setData('tgt', tgt.outerHTML);
+            let tgt = ev.target
+            ev.dataTransfer.setData('tgt', tgt.querySelector('input').outerHTML);
         },
         over: function(ev) {
             ev.preventDefault();
@@ -65,6 +67,9 @@ export default {
 }
 .bookContainer > div {
     text-align: center;
+}
+.draggableContainer > * {
+    pointer-events: none;
 }
 .bookImg {
     border: solid 1px dimgray;

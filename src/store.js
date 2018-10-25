@@ -3,15 +3,13 @@ const state = {
     categories: [],
     leftMode: true,
     rightMode: true,
-    dndTarget: null
 };
 
 const getters = {
     books: state => state.books,
-    categories: state => state.categories,
+    categories: state => state.categories.map(elm => elm),
     leftMode: state => state.leftMode,
     rightMode: state => state.rightMode,
-    dndTarget: state => state.dndTarget
 };
 
 const mutations = {
@@ -27,9 +25,6 @@ const mutations = {
     setRightMode(state, payload) {
         state.rightMode = payload.rightMode;
     },
-    setDndTarget(state, payload) {
-        state.dndTarget = payload.dndTarget;
-    }
 };
 
 const actions = {
@@ -39,15 +34,26 @@ const actions = {
     setCategory({commit}, categories) {
         commit('setCategory', {categories});
     },
+    pushCategory({state}) {
+        state.categories.filter(elm => elm.name !== 'all').forEach(async (elm) => {
+            console.log(elm);
+            try {
+                const fd = new FormData();
+                fd.append('books', JSON.stringify(elm.books));
+                const option = {method: 'PATCH', body: fd};
+                const resp = await fetch('/categories/' + elm._id, option);
+                console.log(resp.status);
+            } catch (err) {
+                console.log(err);
+            }
+        });
+    },
     setLeftMode({commit}, leftMode) {
         commit('setLeftMode', {leftMode});
     },
     setRightMode({commit}, rightMode) {
         commit('setRightMode', {rightMode});
     },
-    setDndTarget({commit}, dndTarget) {
-        commit('setDndTarget', {dndTarget});
-    }
 };
 
 const store = {

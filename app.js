@@ -155,9 +155,10 @@ router.patch('/categories/:id', async (ctx) => {
     let result = 'ng';
     try {
         console.log(ctx.params);
-        console.log(ctx.request.body);
+        const {fields} = await asyncBusboy(ctx.req);
+        console.log(fields);
         const id = ctx.params.id;
-        const books = ctx.request.body.books;
+        const books = JSON.parse(fields.books);
         const resp = await set(CATEGORY, {_id: id}, {books});
         result = JSON.stringify(resp);
     } catch (err) {
