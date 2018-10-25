@@ -6,7 +6,11 @@
         </div>
         <h2>category</h2>
         <ul>
-            <li><router-link to="/">all</router-link></li>
+            <template v-for="(ctgr, idx) in categories">
+                <li :key="idx">
+                    <router-link :to="ctgr.name">{{ctgr.name}}</router-link>
+                </li>
+            </template>
         </ul>
     </div>
 </template>
@@ -22,11 +26,11 @@ export default {
     computed: {
         mode: function() {
             const mode = this.$store.getters.leftMode;
-            if (mode) {
-                return 'content';
-            } else {
-                return 'content-hide';
-            }
+            if (mode) { return 'content'; } 
+            else { return 'content-hide'; }
+        },
+        categories: function() {
+            return this.$store.getters.categories;
         }
     },
     methods: {

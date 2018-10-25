@@ -43,7 +43,7 @@ export default {
 }
 .content-full {
     display: grid;
-    grid-template-columns: 200px 1fr 360px;
+    grid-template-columns: 200px 1fr 260px;
 }
 .content-left {
     display: grid;

@@ -21,10 +21,14 @@ const app = new Vue({
     store: new Vuex.Store(store),
     created: async function() {
         const resp = await fetch('/books');
-        const json = await resp.json();
-        json.forEach(elm => {
+        const books = await resp.json();
+        books.forEach(elm => {
             this.$store.dispatch('addBook', elm);
         });
+        const resp2 = await fetch('/categories');
+        const categories = await resp2.json();
+        const all = {name: 'all', books: books.map(elm => elm._id)};
+        this.$store.dispatch('setCategory', [all, ...categories]);
     }
 }).$mount('#app');
 
