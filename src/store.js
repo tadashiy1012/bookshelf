@@ -3,6 +3,7 @@ const state = {
     categories: [],
     leftMode: true,
     rightMode: true,
+    rightFuncMode: true,
 };
 
 const getters = {
@@ -10,6 +11,7 @@ const getters = {
     categories: state => state.categories.map(elm => elm),
     leftMode: state => state.leftMode,
     rightMode: state => state.rightMode,
+    rightFuncMode: state => state.rightFuncMode
 };
 
 const mutations = {
@@ -25,6 +27,9 @@ const mutations = {
     setRightMode(state, payload) {
         state.rightMode = payload.rightMode;
     },
+    setRightFuncMode(state, payload) {
+        state.rightFuncMode = payload.rightFuncMode;
+    }
 };
 
 const actions = {
@@ -34,15 +39,14 @@ const actions = {
     setCategory({commit}, categories) {
         commit('setCategory', {categories});
     },
-    pushCategory({state}) {
+    reqUpdateCategory({state}) {
         state.categories.filter(elm => elm.name !== 'all').forEach(async (elm) => {
-            console.log(elm);
             try {
                 const fd = new FormData();
                 fd.append('books', JSON.stringify(elm.books));
                 const option = {method: 'PATCH', body: fd};
                 const resp = await fetch('/categories/' + elm._id, option);
-                console.log(resp.status);
+                console.log(resp);
             } catch (err) {
                 console.log(err);
             }
@@ -54,6 +58,9 @@ const actions = {
     setRightMode({commit}, rightMode) {
         commit('setRightMode', {rightMode});
     },
+    setRightFuncMode({commit}, rightFuncMode) {
+        commit('setRightFuncMode', {rightFuncMode});
+    }
 };
 
 const store = {

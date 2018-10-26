@@ -4,7 +4,7 @@
         <div :class="mode">
             <left-content />
             <center-content />
-            <right-content />
+            <right-content :mode="rightFuncMode" />
         </div>
     </div>
 </template>
@@ -32,6 +32,9 @@ export default {
             } else {
                 return 'content-center';
             }
+        },
+        rightFuncMode: function() {
+            return this.$store.getters.rightFuncMode;
         }
     }
 }

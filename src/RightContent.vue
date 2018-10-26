@@ -1,8 +1,9 @@
 <template>
-    <div :class="mode">
+    <div :class="displayMode">
         <h2>right</h2>
         <button v-on:click="onClose">close</button>
         <p>{{books.length}}</p>
+        <rm-drop-area :display="dropAreaDisplay" />
         <div class="bookContainer" v-on:dragstart="start" v-on:dragover="over" v-on:dragleave="leave">
             <template v-for="(book, idx) in books">
                 <div :key="idx">
@@ -16,15 +17,26 @@
     </div>
 </template>
 <script>
+import RmDropArea from './RmDropArea.vue';
 export default {
+    props: ['mode'],
     data: function() {
-        return {};
+        return {
+            dropAreaDisplay: ''
+        };
     },
     computed: {
-        mode: function() {
-            const mode = this.$store.getters.rightMode;
-            if (mode) { return 'content'; } 
+        displayMode: function() {
+            console.log(this.mode);
+            if (this.mode) {
+                this.dropAreaDisplay = '';
+            } else {
+                this.dropAreaDisplay = 'dropArea-hide';
+            }
+            const display = this.$store.getters.rightMode;
+            if (display) { return 'content'; } 
             else { return 'content-hide'; }
+            
         },
         books: function() {
             const all = this.$store.getters.books;
@@ -38,6 +50,9 @@ export default {
             });
             return books;
         }
+    },
+    components: {
+        RmDropArea
     },
     methods: {
         onClose: function() {
@@ -64,8 +79,10 @@ export default {
 .bookContainer {
     display: grid;
     grid-template-columns: 1fr;
+    padding: 18px 0px;
 }
 .bookContainer > div {
+    align-self: center;
     text-align: center;
 }
 .draggableContainer > * {

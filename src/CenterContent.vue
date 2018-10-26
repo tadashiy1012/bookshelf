@@ -1,13 +1,17 @@
 <template>
     <div class="container">
         <h2>category:<span>{{category}}</span></h2>
-        <button v-on:click="onToggleRight">add book</button>
+        <button v-on:click="onToggleRight(false)">add book</button>
+        <button v-on:click="onToggleRight(true)">remove book</button>
         <p>{{books.length}}</p>
         <drop-area :display="dropAreaDisplay" />
-        <div class="bookContainer">
+        <div class="bookContainer" v-on:dragstart="start" v-on:dragover="over" v-on:dragleave="leave">
             <template v-for="(book, idx) in books">
                 <div :key="idx">
-                    <img class="bookImg" :src="book.book" />
+                    <div class="draggableContainer" draggable="true">
+                        <img class="bookImg" :src="book.book" />
+                        <input type="hidden" name="book" :value="JSON.stringify(book)" />
+                    </div>
                 </div>
             </template>
         </div>
@@ -18,7 +22,7 @@ import DropArea from './DropArea.vue';
 export default {
     data: function() {
         return {
-            dropAreaDisplay: '',
+            dropAreaDisplay: ''
         };
     },
     computed: {
@@ -31,7 +35,7 @@ export default {
             }
         },
         books: function() {
-            if (this.$store.getters.rightMode) {
+            if (this.$store.getters.rightMode && !this.$store.getters.rightFuncMode) {
                 this.dropAreaDisplay = '';
             } else {
                 this.dropAreaDisplay = 'dropArea-hide';
@@ -53,9 +57,20 @@ export default {
     },
     components: { DropArea },
     methods: {
-        onToggleRight: function() {
-            const current = this.$store.getters.rightMode;
-            this.$store.dispatch('setRightMode', !current);
+        onToggleRight: function(funcMode) {
+            this.$store.dispatch('setRightMode', true);
+            this.$store.dispatch('setRightFuncMode', funcMode);
+        },
+        start: async function(ev) {
+            let tgt = ev.target
+            ev.dataTransfer.setData('tgtrm', tgt.querySelector('input').outerHTML);
+        },
+        over: function(ev) {
+            ev.preventDefault();
+            ev.dataTransfer.dropEffect = 'move';
+        },
+        leave: function(ev) {
+            ev.preventDefault();
         }
     }
 }
@@ -73,6 +88,9 @@ export default {
 .bookContainer > div {
     align-self: center;
     text-align: center;
+}
+.draggableContainer > * {
+    pointer-events: none;
 }
 .bookImg {
     border: solid 1px darkgray;

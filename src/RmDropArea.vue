@@ -24,7 +24,7 @@ export default {
         },
         drop: async function(ev) {
             ev.stopPropagation();
-            const data = ev.dataTransfer.getData('tgt');
+            const data = ev.dataTransfer.getData('tgtrm');
             const div = document.createElement('div');
             div.innerHTML = data;
             const input = div.querySelector('input');
@@ -32,7 +32,8 @@ export default {
             const ctgrs = this.$store.getters.categories;
             const path = this.$route.path.substr(1);
             const ctgr = ctgrs.find(elm => elm.name === path);
-            ctgr.books = [...ctgr.books, json._id];
+            const idx = ctgr.books.indexOf(json._id);
+            ctgr.books.splice(idx, 1);
             await this.$store.dispatch('setCategory', ctgrs);
             await this.$store.dispatch('reqUpdateCategory');
         }
@@ -60,7 +61,7 @@ export default {
     border: dashed 2px dimgray;
     opacity: 0.5;
     position: absolute;
-    background-color: aquamarine;
+    background-color:darksalmon;
     min-height: 300px;
 }
 .dropArea > p {
