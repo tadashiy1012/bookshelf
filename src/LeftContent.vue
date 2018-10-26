@@ -4,6 +4,12 @@
         <div>
             <button id="inFile" v-on:click="onFile">chose file</button>
         </div>
+        <h2>add category</h2>
+        <div>
+            <input type="text" id="inCtgrName" />
+            <br>
+            <button v-on:click="onAddCtgr">send</button>
+        </div>
         <h2>category</h2>
         <ul>
             <template v-for="(ctgr, idx) in categories">
@@ -53,6 +59,21 @@ export default {
                 }
             });
             file.click();
+        },
+        onAddCtgr: function() {
+            (async () => {
+                const inName = document.querySelector('#inCtgrName');
+                const categoryName = inName.value;
+                try {
+                    const headers = {'Content-Type': 'application/json'};
+                    const body = JSON.stringify({name: categoryName});
+                    const option = {method: 'POST', body, headers};
+                    const resp = await fetch('/categories', option);
+                    console.log(resp);
+                } catch (err) {
+                    console.log(err);
+                }
+            })();
         }
     }
 }
